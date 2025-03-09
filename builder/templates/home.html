@@ -23,6 +23,11 @@
         text-align: center;
         color: #333;
       }
+      p {
+        font-size: 16px;
+        color: #555;
+        line-height: 1.6;
+      }
       form {
         display: flex;
         flex-direction: column;
@@ -58,23 +63,74 @@
       .response h2 {
         color: #333;
       }
+      .error {
+        margin-top: 20px;
+        background-color: #ffdddd;
+        padding: 15px;
+        border-radius: 8px;
+        border: 1px solid #f44336;
+        color: #d32f2f;
+      }
+      .intro-section {
+        margin-top: 30px;
+        background-color: #e0f7fa;
+        padding: 20px;
+        border-radius: 8px;
+        border: 1px solid #00bcd4;
+      }
+      .intro-section h2 {
+        color: #00796b;
+      }
     </style>
   </head>
   <body>
     <div class="container">
-      <h1>ATS Sentence Converter</h1>
+      <h1>Craft Perfect ATS Resume Sentences</h1>
 
       <form method="POST">
-        {% csrf_token %} {{ form.as_p }}
-        <button type="submit">Convert into Sentence for Resume</button>
+        {% csrf_token %}
+
+        <!-- Render the textarea input without the label -->
+        <div>
+          {{ form.input_sentence.errors }}
+          <textarea
+            name="input_sentence"
+            id="id_input_sentence"
+            rows="4"
+            placeholder="Tell me about your professional experience..."
+          ></textarea>
+        </div>
+
+        <button type="submit">
+          Convert into ATS-friendly sentence for Resume
+        </button>
       </form>
 
-      {% if suggested_sentense %}
+      {% if error_message %}
+      <div class="error">
+        <p>{{ error_message }}</p>
+      </div>
+      {% endif %} {% if suggested_sentence %}
       <div class="response">
         <h2>Suggested Sentence:</h2>
-        <p>{{ suggested_sentense }}</p>
+        <p>{{ suggested_sentence }}</p>
       </div>
       {% endif %}
+
+      <!-- Concise Explanation of ATS Scoring -->
+      <div class="intro-section">
+        <h2>Why ATS Matters</h2>
+        <p>
+          Most companies use Applicant Tracking Systems (ATS) to filter resumes
+          before they reach recruiters. Optimizing your resume for ATS ensures
+          it can be properly scanned and ranked, increasing your chances of
+          landing an interview.
+        </p>
+        <p>
+          Our tool helps you craft ATS-friendly sentences by emphasizing key
+          achievements with action verbs and quantifiable data.
+        </p>
+      </div>
     </div>
   </body>
 </html>
