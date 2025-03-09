@@ -1,49 +1,61 @@
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from .models import Resume
-from .forms import ResumeForm
+from .forms import InputForm
 import openai
 from django.conf import settings
 
 from openai import OpenAI
 client = OpenAI(api_key=settings.OPENAI_API_KEY)
 def home(request):
-    return HttpResponse("hi yuri")
+    suggested_sentence = ''
+    input_sentence = '' 
 
-def resume_input(request):
     if request.method == 'POST':
-        form = ResumeForm(request.POST)
+        form = InputForm(request.POST)
         if form.is_valid():
-            resume = form.save()
-            return redirect('generate_resume', pk=resume.pk)
+            input_sentence = form.cleaned_data['input_sentence']  
     else:
-        form = ResumeForm()
-    return render(request, 'builder/resume_input.html', {'form': form})
+        form = InputForm()
 
-
-def generate_resume(request):
-    try:
-        # Example user input message
-        user_message = "How do I output all files in a directory using Python?"
-        
-        # Call OpenAI's chat model (gpt-3.5-turbo or gpt-4)
-        completion = openai.ChatCompletion.create(
-            model="gpt-3.5-",  # You can replace with gpt-3.5-turbo or gpt-4o as needed
+    if input_sentence:  # Ensure it's not empty before calling OpenAI
+        response = client.chat.completions.create(
+            model="gpt-3.5-turbo",
             messages=[
-                {
-                    "role": "user",
-                    "content": user_message,
-                },
+                {"role": "user", "content": f"Transform the following sentence into a format suitable for an ATS (Applicant Tracking System), emphasizing quantifiable achievements and starting with an active verb. The sentence to convert is: {input_sentence}. Ensure that it is only one sentence."}
             ],
+            temperature=0.8
         )
 
-        # Get the response content from the API
-        response_content = completion['choices'][0]['message']['content'].strip()
+        suggested_sentence = f" You can put: {response.choices[0].message.content} for your resume "
 
-        # Render the response content in a Django template
-        return render(request, 'builder/generate_resume.html', {'response_content': response_content})
+    return render(request, 'home.html', {'form': form, 'suggested_sentence': suggested_sentence})
+
+    try:
+        # Check if the user has entered a message
+        if request.method == 'POST':
+            user_message = request.POST.get('message', '')
+
+            # Make sure there is an actual input
+            if user_message:
+                # Call OpenAI API to generate a response
+                completion = openai.chat.completions.create(
+                    model="gpt-3.5-turbo",  # You can change this to gpt-4 for better results
+                    messages=[
+                        {"role": "user",  "content": f"GivenProvide me with some warm, encouraging advice for: {user_message}"}
+                    ]
+                )
+                
+                # Extract the message from the response
+                response_content = completion['choices'][0]['message']['content'].strip()
+
+                # Render the positive, warm response in a Django template
+                return render(request, 'builder/generate_resume.html', {'response_content': response_content})
+            else:
+                return render(request, 'builder/generate_resume.html', {'error': "Please enter a message."})
+        else:
+            return render(request, 'builder/generate_resume.html')
 
     except Exception as e:
-        # Handle any potential errors from the OpenAI API
+        # If there's an error, show the error message in the template
         return render(request, 'builder/generate_resume.html', {'error': f"Error: {str(e)}"})
-   

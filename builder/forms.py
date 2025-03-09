@@ -1,7 +1,5 @@
 from django import forms
 from .models import Resume
 
-class ResumeForm(forms.ModelForm):
-    class Meta:
-        model = Resume
-        fields = ['name', 'email', 'summary', 'experience', 'skills', 'education']
+class InputForm(forms.Form):
+    input_sentence = forms.CharField(widget=forms.Textarea(attrs={'placeholder': 'please enter a sentense from your resume', 'rows': 1,}))

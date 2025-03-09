@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Resume Helper</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #f4f7fc;
+        margin: 0;
+        padding: 0;
+      }
+      .container {
+        max-width: 600px;
+        margin: 50px auto;
+        padding: 20px;
+        background-color: white;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      }
+      h1 {
+        text-align: center;
+        color: #333;
+      }
+      form {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+      textarea {
+        width: 100%;
+        padding: 10px;
+        border-radius: 5px;
+        border: 1px solid #ccc;
+        resize: vertical;
+        font-size: 14px;
+      }
+      button {
+        padding: 10px;
+        background-color: #24eaca;
+        border: none;
+        border-radius: 5px;
+        color: white;
+        font-size: 16px;
+        cursor: pointer;
+      }
+      button:hover {
+        background-color: #1a9b87;
+      }
+      .response {
+        margin-top: 20px;
+        background-color: #f0f9f4;
+        padding: 15px;
+        border-radius: 8px;
+        border: 1px solid #24eaca;
+      }
+      .response h2 {
+        color: #333;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>ATS Sentence Converter</h1>
+
+      <form method="POST">
+        {% csrf_token %} {{ form.as_p }}
+        <button type="submit">Convert into Sentence for Resume</button>
+      </form>
+
+      {% if suggested_sentense %}
+      <div class="response">
+        <h2>Suggested Sentence:</h2>
+        <p>{{ suggested_sentense }}</p>
+      </div>
+      {% endif %}
+    </div>
+  </body>
+</html>
