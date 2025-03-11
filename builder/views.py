@@ -35,7 +35,7 @@ def home(request):
                     response = client.chat.completions.create(
                         model="gpt-3.5-turbo",
                         messages=[
-                            {"role": "user", "content": f"Transform the following sentence into a format suitable for an ATS (Applicant Tracking System), emphasizing quantifiable achievements and starting with an active verb. The sentence to convert is: {input_sentence}. Ensure that it is only one sentence. Here is the example: Optimized the Django backend and Flutter frontend, leading to a 50% decrease in server response time and a 30% enhancement in overall application performance."}
+                            {"role": "user", "content": f"Convert the following sentence into an ATS-optimized bullet point, ensuring it starts with an active verb and highlights quantifiable achievements. If multiple sentences are given, rewrite them concisely, avoiding redundancy while maintaining clarity. The output should be in a single sentence per idea. Example: Optimized the Django backend and Flutter frontend, leading to a 50% decrease in server response time and a 30% enhancement in overall application performance. Sentence to convert: {input_sentence}"}
                         ],
                         temperature=0.8
                     )
