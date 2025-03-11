@@ -12,7 +12,6 @@
         dataLayer.push(arguments);
       }
       gtag("js", new Date());
-
       gtag("config", "G-5YLH7MKLQ8");
     </script>
     <meta charset="UTF-8" />
@@ -99,10 +98,8 @@
   </head>
   <body>
     <div class="container">
-      <form method="POST">
+      <form method="POST" id="resumeForm">
         {% csrf_token %}
-
-        <!-- Render the textarea input without the label -->
         <div>
           {{ form.input_sentence.errors }}
           <textarea
@@ -112,22 +109,20 @@
             placeholder='Tell me about your experience, e.g., "I made a web service using Django."'
           ></textarea>
         </div>
-
         <button type="submit">Convert</button>
       </form>
-
       {% if error_message %}
       <div class="error">
         <p>{{ error_message }}</p>
       </div>
-      {% endif %} {% if suggested_sentence %}
-      <div class="response">
-        <h2>Suggested Sentence:</h2>
-        <p>{{ suggested_sentence }}</p>
-      </div>
       {% endif %}
-
-      <!-- Concise Explanation of ATS Scoring -->
+      <div class="response" id="responseBox" style="display: none">
+        <h2>Suggestion for resume:</h2>
+        <p id="suggestedSentence"></p>
+      </div>
+      <button type="button" id="anotherResponseBtn" style="display: none">
+        Get Another Suggestion
+      </button>
       <div class="intro-section">
         <h2>Why ATS Matters</h2>
         <p>
@@ -142,5 +137,55 @@
         </p>
       </div>
     </div>
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        const form = document.getElementById("resumeForm");
+        const responseBox = document.getElementById("responseBox");
+        const suggestedSentence = document.getElementById("suggestedSentence");
+        const anotherResponseBtn =
+          document.getElementById("anotherResponseBtn");
+
+        form.addEventListener("submit", function (event) {
+          event.preventDefault();
+          const formData = new FormData(form);
+          fetch("", {
+            method: "POST",
+            body: formData,
+            headers: { "X-Requested-With": "XMLHttpRequest" },
+          })
+            .then((response) => response.json())
+            .then((data) => {
+              suggestedSentence.innerText = data.suggested_sentence;
+              responseBox.style.display = "block";
+              anotherResponseBtn.style.display = "inline-block";
+            })
+            .catch((error) => console.error("Error:", error));
+        });
+
+        anotherResponseBtn.addEventListener("click", function () {
+          const inputSentence =
+            document.getElementById("id_input_sentence").value;
+          const csrfToken = document.querySelector(
+            "[name=csrfmiddlewaretoken]"
+          ).value;
+          fetch("", {
+            method: "POST",
+            body: new URLSearchParams({
+              input_sentence: inputSentence,
+              csrfmiddlewaretoken: csrfToken,
+            }),
+            headers: {
+              "X-Requested-With": "XMLHttpRequest",
+              "Content-Type": "application/x-www-form-urlencoded",
+            },
+          })
+            .then((response) => response.json())
+            .then((data) => {
+              suggestedSentence.innerText = data.suggested_sentence;
+            })
+            .catch((error) => console.error("Error:", error));
+        });
+      });
+    </script>
   </body>
 </html>
