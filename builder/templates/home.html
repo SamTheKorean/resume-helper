@@ -85,8 +85,6 @@
   </head>
   <body>
     <div class="container">
-      <h1>Craft Perfect ATS Resume Sentences</h1>
-
       <form method="POST">
         {% csrf_token %}
 
@@ -101,9 +99,7 @@
           ></textarea>
         </div>
 
-        <button type="submit">
-          Convert into ATS-friendly sentence for Resume
-        </button>
+        <button type="submit">Convert</button>
       </form>
 
       {% if error_message %}
